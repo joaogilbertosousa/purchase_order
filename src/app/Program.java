@@ -19,8 +19,7 @@ public class Program {
 		
 		Locale.setDefault(Locale.US);
 		Scanner sc = new Scanner(System.in);
-		DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		DateTimeFormatter fmt2 = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		
 		IO.println("Enter cliente data:");
 		IO.print("Name: ");
@@ -28,7 +27,7 @@ public class Program {
 		IO.print("Email: ");
 		String email = sc.nextLine();
 		IO.print("Birth date (DD/MM/YYYY): ");
-		LocalDate birthDate = LocalDate.parse(sc.next(), fmt1);
+		LocalDate birthDate = LocalDate.parse(sc.next(), fmt);
 		sc.nextLine();
 		
 		Client client = new Client(name, email, birthDate);
@@ -36,38 +35,34 @@ public class Program {
 		IO.println();
 		IO.println("Enter order data:");
 		IO.print("Status: ");
-		String orderStatus = sc.nextLine();
+		OrderStatus status = OrderStatus.valueOf(sc.nextLine());
 		
 		IO.print("How many items to this order? ");
 		int quantityItens = sc.nextInt();
 		
-		Order order = new Order(Instant.now(), OrderStatus.valueOf(orderStatus));
+		Order order = new Order(Instant.now(), status, client);
 		
 		for(int i = 1; i <= quantityItens; i++) {
 			
 			IO.println("Enter #" + i + " item data:");
 			sc.nextLine();
 			IO.print("Product name: ");
-			String nameProduct = sc.nextLine();
+			String productName = sc.nextLine();
 			IO.print("Product price: ");
-			Double priceProduct = sc.nextDouble();
-			
-			Product prod = new Product(nameProduct, priceProduct);
-			
+			Double productPrice = sc.nextDouble();
 			IO.print("Quantity: ");
-			Integer quantityProduct = sc.nextInt();
+			Integer quantity = sc.nextInt();
 			
-			OrderItem orderItem = new OrderItem(quantityProduct, prod.getPrice());
+			Product product = new Product(productName, productPrice);
 			
+			OrderItem orderItem = new OrderItem(quantity, productPrice, product);
+					
 			order.addItem(orderItem);
-						
 		}
 		
-		IO.println(fmt2.format(order.getMoment().atZone(ZoneId.systemDefault())));
-		IO.println(order.getStatus());
-		IO.println(client.getName() + " " + fmt1.format(client.getBirthDate()) + " - " + client.getEmail());
+		IO.println();
+		IO.println(order);
 			
-		
 		sc.close();
 		
 	}
